@@ -192,77 +192,6 @@ st.markdown("""
     .nav-button.active {
         background: #28a745;
     }
-    
-    .logo-container {
-        text-align: center;
-        margin-top: 20px;
-        position: relative;
-    }
-    
-    .logo-container img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        border: 4px solid #fff;
-        background: white;
-        padding: 2px;
-        transition: transform 0.3s ease;
-    }
-    
-    .logo-container img:hover {
-        transform: scale(1.05);
-    }
-    
-    .logo-container::after {
-        content: '';
-        position: absolute;
-        bottom: -8px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 3px;
-        background: linear-gradient(90deg, #4caf50, #2275AC);
-        border-radius: 2px;
-    }
-    
-    .logo-container::before {
-        content: '';
-        position: absolute;
-        top: -5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 110px;
-        height: 110px;
-        border: 2px solid #4caf50;
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-        0% { transform: translateX(-50%) scale(1); opacity: 1; }
-        100% { transform: translateX(-50%) scale(1.1); opacity: 0; }
-    }
-    
-    .logo-container::after {
-        content: '';
-        position: absolute;
-        bottom: -5px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 2px;
-        background: linear-gradient(90deg, #2275AC, #667eea);
-        border-radius: 2px;
-    }
-    
-    .header-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 0;
-        margin-bottom: 2rem;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -942,32 +871,11 @@ def main():
     # Header
     col1, col2, col3 = st.columns([1, 2, 1])
     
-    with col1:
-        st.empty()  # Bo'sh joy
-    
     with col2:
         st.markdown('<h1 class="main-header">📊 Grafa31 Analyzer</h1>', unsafe_allow_html=True)
         st.markdown('<p class="sub-header">Bojxona Auditi Boshqarmasi</p>', unsafe_allow_html=True)
-    
-    with col3:
-        # Bojxona Auditi Boshqarmasi Logo
-        st.markdown("""
-        <div class="logo-container">
-            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JlZW5HcmFkaWVudCIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzRjYWY1MDtzdG9wLW9wYWNpdHk6MSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMzg4ZTNjO3N0b3Atb3BhY2l0eToxIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZWFydGhHcmFkaWVudCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlM2Y2ZmQ7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzllZTRmNDtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPgogIAogIDwhLS0gWXVsZHV6c2ltb24gZm9uIC0tPgogIDxwb2x5Z29uIHBvaW50cz0iNjAsNSA3NSwyNSA5NSwyNSA4MCw0NSA4NSw2NSA2MCw1NSAzNSw2NSA0MCw0NSAyNSwyNSA0NSwyNSIgZmlsbD0iI2NjYyIgc3Ryb2tlPSIjOTk5IiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cG9seWdvbiBwb2ludHM9IjYwLDEwIDcwLDMwIDkwLDMwIDc1LDQ1IDgwLDYwIDYwLDUwIDQwLDYwIDQ1LDQ1IDMwLDMwIDUwLDMwIiBmaWxsPSIjZTVlNWU1IiBzdHJva2U9IiNiYmIiIHN0cm9rZS13aWR0aD0iMSIvPgogIAogIDwhLS0gWWFzaGlsIGRvaXJhIC0tPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNDAiIHI9IjI4IiBmaWxsPSJ1cmwoI2dyZWVuR3JhZGllbnQpIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMyIvPgogIDx0ZXh0IHg9IjIwIiB5PSI0NSIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPk88L3RleHQ+CiAgPHRleHQgeD0iMjAiIHk9IjUyIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSI2IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+WjwvdGV4dD4KICA8dGV4dCB4PSIyMCIgeT0iNTkiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5CPC90ZXh0PgogIDx0ZXh0IHg9IjIwIiB5PSI2NiIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkU8L3RleHQ+CiAgPHRleHQgeD0iMjAiIHk9IjczIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSI2IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+SzwvdGV4dD4KICA8dGV4dCB4PSIyMCIgeT0iODAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5JPC90ZXh0PgogIDx0ZXh0IHg9IjI2IiB5PSI4NyIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPlM8L3RleHQ+CiAgPHRleHQgeD0iMzMiIHk9IjkzIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSI2IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+VDwvdGV4dD4KICA8dGV4dCB4PSI0MCIgeT0iOTciIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5PTjwvdGV4dD4KICA8dGV4dCB4PSI4MCIgeT0iOTciIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5SRVNQVUJMSUtBU0k8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI0NSIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkQ8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI1MiIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkE8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI1OSIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkQ8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI2NiIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkw8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI3MyIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkE8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI4MCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkI8L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI4NyIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPk88L3RleHQ+CiAgPHRleHQgeD0iMTAwIiB5PSI5NCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkpYT05BPC90ZXh0PgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAxIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSI2IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+WElaTUFUSTwvdGV4dD4KICA8dGV4dCB4PSI2MCIgeT0iMTEwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSI2IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+REFWTEFUIEJPSlhPTkEgWElaTUFUSTwvdGV4dD4KICA8dGV4dCB4PSI2MCIgeT0iMTAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSI2IiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXdlaWdodD0iYm9sZCI+TEFUPC90ZXh0PgogIAogIDwhLS0gRHVueW8gZ2xvYnVzaSAtLT4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjQwIiByPSIxOCIgZmlsbD0idXJsKCNlYXJ0aEdyYWRpZW50KSIgc3Ryb2tlPSIjNjY2IiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjQwIiByPSIxNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjY2IiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjQwIiByPSIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjY2IiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjQwIiByPSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjYiIHN0cm9rZS13aWR0aD0iMSIvPgogIDxjaXJjbGUgY3g9IjYwIiBjeT0iNDAiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgCiAgPCEtLSBNZWRpY2FsIGNhZHVjZXVzIC0tPgogIDxsaW5lIHgxPSI2MCIgeTE9IjI1IiB4Mj0iNjAiIHkyPSI1NSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBkPSJNIDU1IDMwIEwgNjUgMzAgTCA2MCAyNSBaIiBmaWxsPSIjMzMzIi8+CiAgPHBhdGggZD0iTSA1NSA1MCBMIDY1IDUwIEwgNjAgNTUgWiIgZmlsbD0iIzMzMyIvPgogIDxwYXRoIGQ9Ik0gNTAgMzUgQyA0NSAzNSA0NSA0NSA1MCA0NSBMIDYwIDQwIFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgPHBhdGggZD0iTSA3MCAzNSBDIDc1IDM1IDc1IDQ1IDcwIDQ1IEwgNjAgNDAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+" 
-                 alt="Bojxona Auditi Boshqarmasi Logo">
-        </div>
-        """, unsafe_allow_html=True)
 
     # Sidebar navigatsiyasi
-    st.sidebar.markdown("""
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JlZW5HcmFkaWVudDIiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0Y2FmNTA7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzI4YTc0NTtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIAogIDwhLS0gVGFzaHFpIGRvaXJhIC0tPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSJ1cmwoI2dyZWVuR3JhZGllbnQyKSIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIzNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIyNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIxNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1IiBmaWxsPSIjZmZmIiBzdHJva2U9Im5vbmUiLz4KICA8dGV4dCB4PSI1MCIgeT0iMzUiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjgiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5CT0pYT05BPC90ZXh0PgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iNiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiPkFVRElUSTwvdGV4dD4KICA8dGV4dCB4PSI1MCIgeT0iNjciIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj5CT1NIUUFSTUFTSTwvdGV4dD4KPC9zdmc+" 
-             style="width: 50px; height: 50px; border-radius: 50%; margin-bottom: 10px;" 
-             alt="Logo">
-        <h4 style="color: #2275AC; margin: 0; font-size: 12px; line-height: 1.2;">Grafa31<br>Analyzer</h4>
-    </div>
-    """, unsafe_allow_html=True)
-    
     st.sidebar.markdown("## 🧭 Navigatsiya")
     
     nav_options = {
