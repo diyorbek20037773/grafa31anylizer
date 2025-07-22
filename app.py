@@ -1617,16 +1617,16 @@ def display_detailed_results(results):
     st.markdown("### 📋 Batafsil Tahlil")
     
     # Filter and sort options
-    col1, col2, col3 = st.columns(3)
+    detail_filter_col1, detail_filter_col2, detail_filter_col3 = st.columns(3)
     
-    with col1:
+    with detail_filter_col1:
         filter_option = st.selectbox(
             "Ko'rsatish:",
             ["Barchasi", "To'liq muvofiq", "Qisman muvofiq", "Nomuvofiq"],
             key="detail_filter"
         )
     
-    with col2:
+    with detail_filter_col2:
         sort_option = st.selectbox(
             "Tartiblash:",
             ["Majburiy bo'limlar (yuqori)", "Majburiy bo'limlar (past)", 
@@ -1634,7 +1634,7 @@ def display_detailed_results(results):
             key="detail_sort"
         )
     
-    with col3:
+    with detail_filter_col3:
         max_display = st.selectbox(
             "Ko'rsatish soni:",
             [5, 10, 20, "Barchasi"],
@@ -1744,12 +1744,12 @@ def display_product_detail(item, idx):
         display_product_basic_info(item)
         
         # Grafa sections
-        col1, col2 = st.columns(2)
+        detail_col1, detail_col2 = st.columns(2)
         
-        with col1:
+        with detail_col1:
             display_filled_sections(item)
         
-        with col2:
+        with detail_col2:
             display_missing_sections(item)
 
 def display_product_basic_info(item):
@@ -1769,24 +1769,24 @@ def display_product_basic_info(item):
         model = info_dict.get('model', 'Noma\'lum')
     
     # Display basic info
-    col1, col2, col3 = st.columns(3)
-    with col1:
+    basic_info_col1, basic_info_col2, basic_info_col3 = st.columns(3)
+    with basic_info_col1:
         st.write(f"**Tovar nomi:** {name}")
-    with col2:
+    with basic_info_col2:
         st.write(f"**Brend:** {brand}")
-    with col3:
+    with basic_info_col3:
         st.write(f"**Model:** {model}")
     
     # Metrics
     if isinstance(completion_rates, CompletionRates):
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
+        metrics_col1, metrics_col2, metrics_col3, metrics_col4 = st.columns(4)
+        with metrics_col1:
             st.metric("Majburiy Bo'limlar", f"{completion_rates.required:.1f}%")
-        with col2:
+        with metrics_col2:
             st.metric("Umumiy Bo'limlar", f"{completion_rates.general:.1f}%")
-        with col3:
+        with metrics_col3:
             st.metric("To'ldirilgan", completion_rates.filled_sections)
-        with col4:
+        with metrics_col4:
             st.metric("Jami", completion_rates.total_sections)
     
     # Validation warnings
@@ -2024,23 +2024,23 @@ def display_search_configuration():
     """Qidiruv konfiguratsiyasi"""
     st.markdown("### ⚙️ Qidiruv Sozlamalari")
     
-    col1, col2, col3 = st.columns(3)
+    config_col1, config_col2, config_col3 = st.columns(3)
     
-    with col1:
+    with config_col1:
         search_priority = st.selectbox(
             "Birinchi navbatda qidirish:",
             ["Majburiy bo'limlar", "Hammasi", "Ixtiyoriy bo'limlar"],
             key="search_priority"
         )
     
-    with col2:
+    with config_col2:
         max_products = st.selectbox(
             "Maksimal tovarlar soni:",
             [5, 10, 20, "Barchasi"],
             key="max_search_products"
         )
     
-    with col3:
+    with config_col3:
         sections_per_product = st.selectbox(
             "Har bir tovar uchun maksimal qidiruv:",
             [2, 3, 5, "Barchasi"],
@@ -2392,15 +2392,15 @@ def display_full_report_tab(results):
     st.markdown("### 📋 Har bir Tovar uchun 31-Grafa Rasmiy Tahlili")
     
     # Filters
-    col1, col2 = st.columns(2)
-    with col1:
+    filter_rep_col1, filter_rep_col2 = st.columns(2)
+    with filter_rep_col1:
         compliance_filter = st.selectbox(
             "Muvofiqlik bo'yicha filter:",
             ["Barchasi", "To'liq muvofiq", "Qisman muvofiq", "Nomuvofiq"],
             key="report_compliance_filter"
         )
     
-    with col2:
+    with filter_rep_col2:
         sort_by = st.selectbox(
             "Tartiblash:",
             ["Majburiy foiz (yuqori)", "Majburiy foiz (past)", "Tovar nomi"],
@@ -2475,39 +2475,39 @@ def display_comprehensive_product_report(item, idx):
         """, unsafe_allow_html=True)
         
         # Basic information
-        col1, col2, col3 = st.columns(3)
-        with col1:
+        comp_rep_col1, comp_rep_col2, comp_rep_col3 = st.columns(3)
+        with comp_rep_col1:
             st.write(f"**📦 Tovar nomi:** {product_name}")
-        with col2:
+        with comp_rep_col2:
             st.write(f"**🏷️ Brend:** {brand if brand else 'Noma\'lum'}")
-        with col3:
+        with comp_rep_col3:
             st.write(f"**🔧 Model:** {model if model else 'Noma\'lum'}")
         
         # Detailed metrics
         st.markdown("#### 📊 Batafsil Metrikalar")
-        col1, col2, col3, col4 = st.columns(4)
+        comp_metrics_col1, comp_metrics_col2, comp_metrics_col3, comp_metrics_col4 = st.columns(4)
         
-        with col1:
+        with comp_metrics_col1:
             st.metric("Majburiy Bo'limlar", f"{required_rate:.1f}%", 
                      delta=f"{required_rate - 100:.1f}%" if required_rate != 100 else None)
-        with col2:
+        with comp_metrics_col2:
             st.metric("Umumiy Bo'limlar", f"{general_rate:.1f}%",
                      delta=f"{general_rate - 75:.1f}%" if general_rate != 75 else None)
-        with col3:
+        with comp_metrics_col3:
             st.metric("To'ldirilgan", f"{filled_sections}/{total_sections}")
-        with col4:
+        with comp_metrics_col4:
             completion_percentage = (filled_sections / total_sections * 100) if total_sections > 0 else 0
             st.metric("To'ldirilish", f"{completion_percentage:.1f}%")
         
         st.markdown("---")
         
         # Grafa sections analysis
-        col1, col2 = st.columns(2)
+        comp_grafa_col1, comp_grafa_col2 = st.columns(2)
         
-        with col1:
+        with comp_grafa_col1:
             display_comprehensive_filled_sections(item)
         
-        with col2:
+        with comp_grafa_col2:
             display_comprehensive_missing_sections(item)
         
         # Validation and processing info
@@ -2637,14 +2637,14 @@ def display_processing_info(item):
     """Qayta ishlash ma'lumotlarini ko'rsatish"""
     st.markdown("#### ℹ️ Qayta Ishlash Ma'lumotlari")
     
-    col1, col2, col3 = st.columns(3)
+    processing_col1, processing_col2, processing_col3 = st.columns(3)
     
-    with col1:
+    with processing_col1:
         is_valid = item.get('is_valid', True)
         status = "✅ Validatsiya o'tdi" if is_valid else "❌ Validatsiya xatosi"
         st.write(f"**Validatsiya:** {status}")
     
-    with col2:
+    with processing_col2:
         processed_at = item.get('processed_at', 'Noma\'lum')
         if processed_at != 'Noma\'lum':
             try:
@@ -2655,7 +2655,7 @@ def display_processing_info(item):
         else:
             st.write(f"**Qayta ishlangan:** {processed_at}")
     
-    with col3:
+    with processing_col3:
         compliance_level = item.get('compliance_level', ComplianceLevel.NON_COMPLIANT)
         compliance_text = compliance_level.value if hasattr(compliance_level, 'value') else str(compliance_level)
         st.write(f"**Muvofiqlik:** {compliance_text}")
@@ -2672,14 +2672,14 @@ def display_statistics_tab(results):
     st.markdown("### 📊 31-Grafa Bo'limlari Statistikasi")
     
     # Enhanced visualizations
-    col1, col2 = st.columns(2)
+    stats_viz_col1, stats_viz_col2 = st.columns(2)
     
-    with col1:
+    with stats_viz_col1:
         fig1 = create_enhanced_completion_chart(results)
         if fig1:
             st.plotly_chart(fig1, use_container_width=True)
     
-    with col2:
+    with stats_viz_col2:
         fig2 = create_sections_stats_chart(results)
         if fig2:
             st.plotly_chart(fig2, use_container_width=True)
@@ -2761,15 +2761,15 @@ def display_performance_metrics():
     if st.session_state.processor:
         stats = st.session_state.processor.get_processing_stats()
         
-        col1, col2, col3, col4 = st.columns(4)
+        perf_col1, perf_col2, perf_col3, perf_col4 = st.columns(4)
         
-        with col1:
+        with perf_col1:
             st.metric("Qayta Ishlangan", stats['processed_count'])
-        with col2:
+        with perf_col2:
             st.metric("Muvaffaqiyat Darajasi", f"{stats['success_rate']:.1f}%")
-        with col3:
+        with perf_col3:
             st.metric("Qidiruv So'rovlari", stats['search_requests'])
-        with col4:
+        with perf_col4:
             if stats['search_requests'] > 0:
                 st.metric("Qidiruv Muvaffaqiyati", f"{stats['search_success_rate']:.1f}%")
 
@@ -2894,9 +2894,9 @@ def display_compliance_trends(results):
             completion_ranges['<50%'] += 1
     
     # Display distribution
-    col1, col2 = st.columns(2)
+    trends_col1, trends_col2 = st.columns(2)
     
-    with col1:
+    with trends_col1:
         st.write("**Majburiy Bo'limlar To'ldirilish Taqsimoti:**")
         for range_name, count in completion_ranges.items():
             percentage = (count / len(results) * 100) if results else 0
@@ -2908,7 +2908,7 @@ def display_compliance_trends(results):
                 else:
                     st.error(f"❌ {range_name}: {count} ta tovar ({percentage:.1f}%)")
     
-    with col2:
+    with trends_col2:
         # Create pie chart for compliance distribution
         try:
             labels = list(completion_ranges.keys())
@@ -3048,9 +3048,9 @@ def display_export_tab(results):
     st.info(f"📊 **Eksport statistikasi**: {total_products} ta tovar, {compliant_count} ta to'liq muvofiq")
     
     # Excel export
-    col1, col2 = st.columns(2)
+    export_col1, export_col2 = st.columns(2)
     
-    with col1:
+    with export_col1:
         st.markdown("#### 📊 Excel Hisobot")
         st.write("Keng qamrovli Excel hisobot - barcha ma'lumotlar, metrikalar va tahlillar")
         
@@ -3069,7 +3069,7 @@ def display_export_tab(results):
         else:
             st.error("Excel eksport xatosi yuz berdi")
     
-    with col2:
+    with export_col2:
         st.markdown("#### 📄 JSON Ma'lumotlar")
         st.write("Texnik ma'lumotlar va API integratsiyasi uchun JSON format")
         
@@ -3174,9 +3174,9 @@ def display_export_preview(results):
         sample_item = results[0]
         
         # Show what will be exported
-        col1, col2 = st.columns(2)
+        preview_export_col1, preview_export_col2 = st.columns(2)
         
-        with col1:
+        with preview_export_col1:
             st.write("**Excel hisobotiga kiradigan ma'lumotlar:**")
             st.write("• Tovar asosiy ma'lumotlari")
             st.write("• Barcha 31-grafa bo'limlari")
@@ -3185,7 +3185,7 @@ def display_export_preview(results):
             st.write("• Validatsiya holati")
             st.write("• Qo'shimcha metrikalar")
         
-        with col2:
+        with preview_export_col2:
             st.write("**JSON ma'lumotlariga kiradigan ma'lumotlar:**")
             st.write("• Batafsil metadata")
             st.write("• Umumiy statistikalar")
@@ -3330,9 +3330,9 @@ def display_quality_distribution(results):
         }
     
     # Display quality metrics
-    col1, col2 = st.columns(2)
+    quality_col1, quality_col2 = st.columns(2)
     
-    with col1:
+    with quality_col1:
         st.write("**Eng Yaxshi Sifatli Bo'limlar:**")
         best_sections = sorted(section_quality.items(), key=lambda x: x[1]['avg_length'], reverse=True)[:5]
         
@@ -3344,7 +3344,7 @@ def display_quality_distribution(results):
             </div>
             """, unsafe_allow_html=True)
     
-    with col2:
+    with quality_col2:
         st.write("**Yaxshilanishi Kerak Bo'limlar:**")
         worst_sections = sorted(section_quality.items(), key=lambda x: x[1]['avg_length'])[:5]
         
