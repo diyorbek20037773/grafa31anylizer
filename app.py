@@ -618,7 +618,7 @@ class AdvancedGrafa31Processor:
         if product_info.brand and product_info.brand != product_info.name:
             query_parts.append(product_info.brand[:30])
         
-        # Add relevant keywords
+        # Add relevant keywords based on product type and section
         if keywords:
             # Choose most relevant keywords
             relevant_keywords = keywords[:2]  # Top 2 keywords
@@ -629,9 +629,96 @@ class AdvancedGrafa31Processor:
         # Final optimization
         return self.api_client._optimize_query(query)
     
+    def should_skip_section_search(self, product_info: ProductInfo, section_key: str) -> bool:
+        """Ma'lum bo'limlarni qidirishni o'tkazib yuborish kerakligini aniqlash"""
+        product_name = product_info.name.lower()
+        
+        # Aksiz markalari faqat tegishli mahsulotlar uchun
+        if section_key == "4_aksiz_markalari":
+            # Aksiz markalari kerak bo'lgan mahsulotlar ro'yxati
+            excise_products = [
+                'алкоголь', 'водка', 'вино', 'пиво', 'коньяк', 'виски', 'ликер',
+                'сигарет', 'табак', 'папирос', 'сигар',
+                'бензин', 'дизель', 'керосин', 'мазут', 'топливо',
+                'драгоценн', 'золот', 'серебр', 'платин', 'бриллиант'
+            ]
+            
+            # Avtomobillarda aksiz markalari yo'q
+            auto_keywords = ['автомобиль', 'машин', 'авто', 'car', 'vehicle', 'легков']
+            if any(keyword in product_name for keyword in auto_keywords):
+                return True  # Skip search for cars
+            
+            # Agar mahsulot aksiz mahsulotlari ro'yxatida bo'lmasa, o'tkazib yuborish
+            if not any(keyword in product_name for keyword in excise_products):
+                return True
+        
+        # Konteyner raqamlari faqat konteynerda tashiladigan tovarlar uchun
+        if section_key == "3_konteyner_raqamlari":
+            # Odatda konteynerda tashilmaydigan mahsulotlar
+            non_container_products = [
+                'газ', 'нефть', 'электроэнерг', 'услуг', 'работ'
+            ]
+            
+            if any(keyword in product_name for keyword in non_container_products):
+                return True
+            
+            # Kichik mahsulotlar odatda alohida konteynerda tashilmaydi
+            small_items = ['ручк', 'карандаш', 'бумаг', 'канцтовар']
+            if any(keyword in product_name for keyword in small_items):
+                return True
+        
+        # Yetkazib berish muddati faqat maxsus tovarlar uchun
+        if section_key == "5_yetkazib_berish":
+            # Quvur transporti va elektr uzatish liniyalari
+            pipeline_products = ['газ', 'нефть', 'электроэнерг', 'трубопровод']
+            if not any(keyword in product_name for keyword in pipeline_products):
+                return True
+        
+        # Investitsiya kodi faqat investitsiya loyihalari uchun
+        if section_key == "8_investitsiya_kodi":
+            investment_keywords = ['оборудован', 'станок', 'машин', 'завод', 'техник', 'промышлен']
+            if not any(keyword in product_name for keyword in investment_keywords):
+                return True
+        
+        # Soha kodi faqat texnologik asbob-uskunalar uchun
+        if section_key == "9_soha_kodi":
+            tech_keywords = ['оборудован', 'станок', 'машин', 'аппарат', 'устройств', 'прибор']
+            if not any(keyword in product_name for keyword in tech_keywords):
+                return True
+        
+        return False  # Continue with search
+    
     def fill_missing_section(self, product_info: ProductInfo, section_key: str, 
                            progress_container=None) -> Tuple[str, bool]:
         """Yetishmayotgan bo'limni to'ldirish (enhanced)"""
+        
+        # Birinchi navbatda qidirishni o'tkazib yuborish kerakligini tekshirish
+        if self.should_skip_section_search(product_info, section_key):
+            section_info = GRAFA_31_SECTIONS[section_key]
+            section_name = section_info['name']
+            
+            # Sabab asosida xabar berish
+            if section_key == "4_aksiz_markalari":
+                if any(keyword in product_info.name.lower() for keyword in ['автомобиль', 'машин', 'авто', 'car', 'vehicle', 'легков']):
+                    reason = "Avtomobillarga aksiz markalari talab etilmaydi"
+                else:
+                    reason = "Bu tovar turi uchun aksiz markalari talab etilmaydi"
+            elif section_key == "3_konteyner_raqamlari":
+                reason = "Bu tovar turi odatda alohida konteynerda tashilmaydi"
+            elif section_key == "5_yetkazib_berish":
+                reason = "Bu bo'lim faqat quvur transporti va elektr uzatish uchun"
+            elif section_key == "8_investitsiya_kodi":
+                reason = "Bu tovar investitsiya loyihasi hisoblanmaydi"
+            elif section_key == "9_soha_kodi":
+                reason = "Bu bo'lim faqat texnologik asbob-uskunalar uchun"
+            else:
+                reason = "Bu tovar turi uchun tegishli emas"
+            
+            if progress_container:
+                progress_container.write(f"⏭️ **{section_name}**: {reason}")
+            
+            return f"Bu tovar turi uchun tegishli emas: {reason}", False
+        
         query = self.create_smart_search_query(product_info, section_key)
         
         if progress_container:
@@ -1821,42 +1908,75 @@ def display_missing_analysis():
     """Yetishmayotgan ma'lumotlar tahlili"""
     results = st.session_state.processed_data
     
-    # Calculate missing statistics
+    # Calculate missing statistics with smart filtering
     total_missing_required = 0
     total_missing_optional = 0
+    total_skipped_required = 0
+    total_skipped_optional = 0
     products_with_missing_required = 0
     
     missing_by_section = {}
+    skipped_by_section = {}
     
     for item in results:
         missing_sections = item.get('missing_sections', {})
         required_missing = missing_sections.get('required', [])
         optional_missing = missing_sections.get('optional', [])
         
-        total_missing_required += len(required_missing)
-        total_missing_optional += len(optional_missing)
+        product_info = item.get('product_info')
         
-        if required_missing:
+        # Separate truly missing from not applicable
+        actual_required_missing = []
+        actual_optional_missing = []
+        skipped_required = []
+        skipped_optional = []
+        
+        for section_key in required_missing:
+            if st.session_state.processor.should_skip_section_search(product_info, section_key):
+                skipped_required.append(section_key)
+                total_skipped_required += 1
+            else:
+                actual_required_missing.append(section_key)
+                total_missing_required += 1
+        
+        for section_key in optional_missing:
+            if st.session_state.processor.should_skip_section_search(product_info, section_key):
+                skipped_optional.append(section_key)
+                total_skipped_optional += 1
+            else:
+                actual_optional_missing.append(section_key)
+                total_missing_optional += 1
+        
+        if actual_required_missing:
             products_with_missing_required += 1
         
-        # Count by section
-        for section_key in required_missing + optional_missing:
+        # Count by section (actual missing only)
+        for section_key in actual_required_missing + actual_optional_missing:
             section_info = GRAFA_31_SECTIONS.get(section_key, {})
             section_name = section_info.get('name', section_key)
             
             if section_name not in missing_by_section:
                 missing_by_section[section_name] = 0
             missing_by_section[section_name] += 1
+        
+        # Count skipped sections
+        for section_key in skipped_required + skipped_optional:
+            section_info = GRAFA_31_SECTIONS.get(section_key, {})
+            section_name = section_info.get('name', section_key)
+            
+            if section_name not in skipped_by_section:
+                skipped_by_section[section_name] = 0
+            skipped_by_section[section_name] += 1
     
     # Display statistics
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Majburiy Yetishmayotgan", total_missing_required)
+        st.metric("Kerak Bo'lgan Majburiy", total_missing_required)
     with col2:
-        st.metric("Ixtiyoriy Yetishmayotgan", total_missing_optional)
+        st.metric("Kerak Bo'lgan Ixtiyoriy", total_missing_optional)
     with col3:
-        st.metric("Majburiy Yetishmagan Tovarlar", products_with_missing_required)
+        st.metric("Tegishli Emas", total_skipped_required + total_skipped_optional)
     with col4:
         total_products = len(results)
         coverage = ((total_products - products_with_missing_required) / total_products * 100) if total_products > 0 else 0
@@ -1864,18 +1984,41 @@ def display_missing_analysis():
     
     # Status message
     if total_missing_required == 0:
-        st.success("🎉 Barcha majburiy bo'limlar to'ldirilgan!")
+        st.success("🎉 Barcha kerak bo'lgan majburiy bo'limlar to'ldirilgan!")
+        if total_skipped_required > 0:
+            st.info(f"ℹ️ {total_skipped_required} ta majburiy bo'lim bu tovarlar uchun tegishli emas")
     else:
-        st.warning(f"⚠️ {total_missing_required} ta majburiy bo'lim to'ldirilishi kerak")
+        st.warning(f"⚠️ {total_missing_required} ta majburiy bo'lim haqiqatan ham to'ldirilishi kerak")
+        if total_skipped_required > 0:
+            st.info(f"ℹ️ {total_skipped_required} ta majburiy bo'lim bu tovarlar uchun tegishli emas")
     
-    # Most missing sections
+    # Most missing sections (actual missing only)
     if missing_by_section:
-        st.markdown("### 📊 Eng Ko'p Yetishmayotgan Bo'limlar")
+        st.markdown("### 📊 Haqiqatan Yetishmayotgan Bo'limlar")
         sorted_missing = sorted(missing_by_section.items(), key=lambda x: x[1], reverse=True)
         
         for section_name, count in sorted_missing[:5]:
             percentage = (count / len(results)) * 100
-            st.write(f"• **{section_name[:50]}{'...' if len(section_name) > 50 else ''}**: {count} ta tovar ({percentage:.1f}%)")
+            if count > 0:
+                st.write(f"• **{section_name[:60]}{'...' if len(section_name) > 60 else ''}**: {count} ta tovar ({percentage:.1f}%)")
+    
+    # Most skipped sections
+    if skipped_by_section:
+        st.markdown("### ⏭️ Tovar Turiga Mos Kelmaydigan Bo'limlar")
+        sorted_skipped = sorted(skipped_by_section.items(), key=lambda x: x[1], reverse=True)
+        
+        for section_name, count in sorted_skipped[:3]:
+            percentage = (count / len(results)) * 100
+            if count > 0:
+                st.write(f"• **{section_name[:60]}{'...' if len(section_name) > 60 else ''}**: {count} ta tovar ({percentage:.1f}%)")
+        
+        st.markdown("""
+        **💡 Tushuntirish:**
+        - **Aksiz markalari**: Avtomobillar uchun aksiz markalari yo'q, faqat alkogol, tamaki va ba'zi maxsus tovarlar uchun
+        - **Konteyner raqamlari**: Kichik tovarlar yoki individual yuklar uchun alohida konteyner kerak emas  
+        - **Yetkazib berish muddati**: Faqat quvur transporti va elektr uzatish liniyalari uchun
+        - **Investitsiya/Soha kodlari**: Faqat sanoat asbob-uskunalari uchun tegishli
+        """)
 
 def display_search_configuration():
     """Qidiruv konfiguratsiyasi"""
@@ -1912,9 +2055,10 @@ def display_search_plan(priority, max_products, sections_per_product):
     """Qidiruv rejasini ko'rsatish"""
     results = st.session_state.processed_data
     
-    st.markdown("#### 📋 Qidiruv Rejasi")
+    st.markdown("#### 📋 Aqlli Qidiruv Rejasi")
     
     search_queue = []
+    skipped_sections = []
     
     for idx, item in enumerate(results):
         if max_products != "Barchasi" and idx >= max_products:
@@ -1936,23 +2080,58 @@ def display_search_plan(priority, max_products, sections_per_product):
         else:  # Hammasi
             sections_to_search = missing_sections.get('required', []) + missing_sections.get('optional', [])
         
+        # Filter out sections that should be skipped
+        actual_sections = []
+        skipped_for_product = []
+        
+        for section_key in sections_to_search:
+            if st.session_state.processor.should_skip_section_search(product_info, section_key):
+                skipped_for_product.append(section_key)
+            else:
+                actual_sections.append(section_key)
+        
         # Limit sections per product
         if sections_per_product != "Barchasi":
-            sections_to_search = sections_to_search[:sections_per_product]
+            actual_sections = actual_sections[:sections_per_product]
         
-        if sections_to_search:
-            search_queue.append((product_name, sections_to_search))
+        if actual_sections or skipped_for_product:
+            search_queue.append((product_name, actual_sections, skipped_for_product))
     
     # Display plan
     if search_queue:
-        total_searches = sum(len(sections) for _, sections in search_queue)
-        st.info(f"📊 Reja: {len(search_queue)} ta tovar, {total_searches} ta qidiruv so'rovi")
+        total_searches = sum(len(sections) for _, sections, _ in search_queue)
+        total_skipped = sum(len(skipped) for _, _, skipped in search_queue)
         
-        for product_name, sections in search_queue[:3]:  # Show first 3
-            st.write(f"• **{product_name[:30]}{'...' if len(product_name) > 30 else ''}**: {len(sections)} ta bo'lim")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.info(f"📊 **{len(search_queue)} ta tovar**")
+        with col2:
+            st.success(f"🔍 **{total_searches} ta qidiruv**")
+        with col3:
+            st.warning(f"⏭️ **{total_skipped} ta o'tkazib yuborish**")
+        
+        # Show details for first few products
+        for idx, (product_name, sections, skipped) in enumerate(search_queue[:3]):
+            st.write(f"**{idx + 1}. {product_name[:40]}{'...' if len(product_name) > 40 else ''}**")
+            
+            if sections:
+                section_names = [GRAFA_31_SECTIONS[s]['name'][:30] + '...' if len(GRAFA_31_SECTIONS[s]['name']) > 30 else GRAFA_31_SECTIONS[s]['name'] for s in sections]
+                st.write(f"   🔍 Qidiriladi: {', '.join(section_names)}")
+            
+            if skipped:
+                skipped_names = [GRAFA_31_SECTIONS[s]['name'][:30] + '...' if len(GRAFA_31_SECTIONS[s]['name']) > 30 else GRAFA_31_SECTIONS[s]['name'] for s in skipped]
+                st.write(f"   ⏭️ O'tkazib yuboriladi: {', '.join(skipped_names)}")
         
         if len(search_queue) > 3:
             st.write(f"... va yana {len(search_queue) - 3} ta tovar")
+        
+        # Show common skipped reasons
+        if total_skipped > 0:
+            st.markdown("##### 💡 O'tkazib Yuborish Sababları:")
+            st.write("• **Aksiz markalari**: Avtomobillarga aksiz markalari talab etilmaydi")
+            st.write("• **Konteyner raqamlari**: Kichik yoki maxsus tovarlar alohida konteynerda tashilmaydi")
+            st.write("• **Yetkazib berish**: Faqat quvur transporti va elektr uzatish uchun")
+            st.write("• **Investitsiya/Soha kodlari**: Faqat tegishli asbob-uskunalar uchun")
     else:
         st.warning("Qidiruv uchun mos tovarlar topilmadi")
 
@@ -1973,6 +2152,7 @@ def execute_smart_search():
     filled_count = 0
     total_attempts = 0
     error_count = 0
+    skipped_count = 0
     
     # Progress tracking
     progress_bar = st.progress(0)
@@ -2027,6 +2207,16 @@ def execute_smart_search():
                         product_info, section_key, progress_container
                     )
                     
+                    # Tegishli emasligini tekshirish
+                    if "Bu tovar turi uchun tegishli emas" in filled_info:
+                        skipped_count += 1
+                        # Yetishmayotgan bo'limlardan olib tashlash
+                        if section_key in missing_sections.get('required', []):
+                            missing_sections['required'].remove(section_key)
+                        elif section_key in missing_sections.get('optional', []):
+                            missing_sections['optional'].remove(section_key)
+                        continue
+                    
                     if success:
                         # Add to grafa_data
                         if 'grafa_data' not in item:
@@ -2058,7 +2248,7 @@ def execute_smart_search():
             progress_bar.progress((idx + 1) / len(search_products))
     
     # Final results
-    success_rate = (filled_count / total_attempts) * 100 if total_attempts > 0 else 0
+    success_rate = (filled_count / (total_attempts - skipped_count)) * 100 if (total_attempts - skipped_count) > 0 else 0
     
     if success_rate >= 70:
         message_type = "success-message"
@@ -2073,12 +2263,15 @@ def execute_smart_search():
     progress_container.markdown(f'''
     <div class="{message_type}">
         {icon} Aqlli Web Search yakunlandi!<br>
-        Natija: {filled_count}/{total_attempts} ta bo\'lim to\'ldirildi ({success_rate:.1f}%)<br>
-        Xatolar: {error_count} ta
+        ✅ To'ldirildi: {filled_count} ta bo'lim<br>
+        ⏭️ O'tkazib yuborildi: {skipped_count} ta (tovar turiga mos emas)<br>
+        ❌ Topilmadi: {total_attempts - filled_count - skipped_count} ta<br>
+        ⚠️ Xatolar: {error_count} ta<br>
+        📊 Muvaffaqiyat darajasi: {success_rate:.1f}%
     </div>
     ''', unsafe_allow_html=True)
     
-    status_text.success(f"✅ Qidiruv jarayoni yakunlandi! Muvaffaqiyat: {success_rate:.1f}%")
+    status_text.success(f"✅ Aqlli qidiruv yakunlandi! Muvaffaqiyat: {success_rate:.1f}%")
 
 def show_search_navigation():
     """Qidiruv sahifasi navigatsiyasi"""
