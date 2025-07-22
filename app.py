@@ -1202,9 +1202,9 @@ def main():
         st.session_state.processor = AdvancedGrafa31Processor()
 
     # Header
-    col1, col2, col3 = st.columns([1, 2, 1])
+    header_col1, header_col2, header_col3 = st.columns([1, 2, 1])
     
-    with col2:
+    with header_col2:
         st.markdown('<h1 class="main-header">📋 31-Grafa Rasmiy Tahlil Tizimi</h1>', unsafe_allow_html=True)
         st.markdown('<p class="sub-header">Adliya vazirligi 2773-son yo\'riqnomasiga muvofiq</p>', unsafe_allow_html=True)
 
@@ -1243,10 +1243,10 @@ def show_sidebar_info():
     required_count = sum(1 for v in GRAFA_31_SECTIONS.values() if v.get('required', False))
     optional_count = len(GRAFA_31_SECTIONS) - required_count
     
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
+    sidebar_col1, sidebar_col2 = st.sidebar.columns(2)
+    with sidebar_col1:
         st.metric("Majburiy", required_count)
-    with col2:
+    with sidebar_col2:
         st.metric("Ixtiyoriy", optional_count)
     
     st.sidebar.metric("Jami bo'limlar", len(GRAFA_31_SECTIONS))
@@ -1300,9 +1300,9 @@ def show_enhanced_upload_page():
     """)
     
     # Requirements display
-    col1, col2 = st.columns(2)
+    upload_col1, upload_col2 = st.columns(2)
     
-    with col1:
+    with upload_col1:
         st.markdown("### ⭐ Majburiy Bo'limlar")
         required_sections = [(k, v) for k, v in GRAFA_31_SECTIONS.items() if v.get('required', False)]
         
@@ -1316,7 +1316,7 @@ def show_enhanced_upload_page():
             </div>
             """, unsafe_allow_html=True)
     
-    with col2:
+    with upload_col2:
         st.markdown("### 📋 Ixtiyoriy Bo'limlar")
         optional_sections = [(k, v) for k, v in GRAFA_31_SECTIONS.items() if not v.get('required', False)]
         
@@ -1364,8 +1364,8 @@ def show_enhanced_upload_page():
                 display_products_preview(products)
                 
                 # Analysis button
-                col1, col2, col3 = st.columns([1, 2, 1])
-                with col2:
+                upload_btn_col1, upload_btn_col2, upload_btn_col3 = st.columns([1, 2, 1])
+                with upload_btn_col2:
                     if st.button("🔍 31-Grafa Rasmiy Tahlil Qilish", 
                                type="primary", use_container_width=True):
                         st.session_state.current_page = 'analysis'
@@ -1375,15 +1375,15 @@ def display_metadata(metadata):
     """Metadata ni ko'rsatish"""
     st.markdown("### 📊 Fayl Ma'lumotlari")
     
-    col1, col2, col3, col4 = st.columns(4)
+    meta_col1, meta_col2, meta_col3, meta_col4 = st.columns(4)
     
-    with col1:
+    with meta_col1:
         st.metric("Jami tovarlar", metadata.get('total_items', 0))
-    with col2:
+    with meta_col2:
         st.metric("Muvaffaqiyatli", metadata.get('successful_items', 0))
-    with col3:
+    with meta_col3:
         st.metric("Muvaffaqiyatsiz", metadata.get('failed_items', 0))
-    with col4:
+    with meta_col4:
         if 'processed_at' in metadata:
             processed_date = metadata['processed_at'][:10]
             st.metric("Sana", processed_date)
@@ -1414,15 +1414,15 @@ def display_products_preview(products):
                         st.write(f"• {warning}")
                 
                 # Display key fields
-                col1, col2 = st.columns(2)
+                preview_col1, preview_col2 = st.columns(2)
                 
-                with col1:
+                with preview_col1:
                     st.write("**Asosiy ma'lumotlar:**")
                     for field in ['наименование_товара', 'название_бренда', 'модель', 'количество']:
                         value = product.get(field, 'Mavjud emas')
                         st.write(f"• **{field}**: {value}")
                 
-                with col2:
+                with preview_col2:
                     st.write("**JSON strukturasi:**")
                     # Show structure without displaying all data
                     field_count = len(product)
@@ -1567,20 +1567,20 @@ def display_overall_statistics(results):
     non_compliant = total_products - full_compliant - partial_compliant
     
     # Display metrics
-    col1, col2, col3, col4, col5 = st.columns(5)
+    stats_col1, stats_col2, stats_col3, stats_col4, stats_col5 = st.columns(5)
     
-    with col1:
+    with stats_col1:
         st.metric("Jami Tovarlar", total_products)
-    with col2:
+    with stats_col2:
         st.metric("O'rtacha Umumiy", f"{avg_general:.1f}%", 
                  delta=f"{avg_general - 75:.1f}%" if avg_general != 75 else None)
-    with col3:
+    with stats_col3:
         st.metric("O'rtacha Majburiy", f"{avg_required:.1f}%",
                  delta=f"{avg_required - 80:.1f}%" if avg_required != 80 else None)
-    with col4:
+    with stats_col4:
         st.metric("To'liq Muvofiq", full_compliant,
                  delta=f"{(full_compliant/total_products*100):.1f}%")
-    with col5:
+    with stats_col5:
         compliance_rate = (full_compliant / total_products * 100) if total_products > 0 else 0
         st.metric("Muvofiqlik Darajasi", f"{compliance_rate:.1f}%")
     
@@ -1596,16 +1596,16 @@ def display_analysis_charts(results):
     """Tahlil diagrammalarini ko'rsatish"""
     st.markdown("### 📈 Vizual Tahlil")
     
-    col1, col2 = st.columns(2)
+    chart_col1, chart_col2 = st.columns(2)
     
-    with col1:
+    with chart_col1:
         fig1 = create_enhanced_completion_chart(results)
         if fig1:
             st.plotly_chart(fig1, use_container_width=True)
         else:
             st.error("Diagram yaratishda xato")
     
-    with col2:
+    with chart_col2:
         fig2 = create_sections_stats_chart(results)
         if fig2:
             st.plotly_chart(fig2, use_container_width=True)
@@ -1870,14 +1870,14 @@ def display_missing_sections(item):
 def show_analysis_navigation():
     """Tahlil sahifasi navigatsiyasi"""
     st.markdown("---")
-    col1, col2 = st.columns(2)
+    nav_col1, nav_col2 = st.columns(2)
     
-    with col1:
+    with nav_col1:
         if st.button("🌐 Web Search", use_container_width=True):
             st.session_state.current_page = 'search'
             st.rerun()
     
-    with col2:
+    with nav_col2:
         if st.button("📄 Rasmiy Hisobot", use_container_width=True):
             st.session_state.current_page = 'report'
             st.rerun()
@@ -2276,14 +2276,14 @@ def execute_smart_search():
 def show_search_navigation():
     """Qidiruv sahifasi navigatsiyasi"""
     st.markdown("---")
-    col1, col2 = st.columns(2)
+    search_nav_col1, search_nav_col2 = st.columns(2)
     
-    with col1:
+    with search_nav_col1:
         if st.button("🔍 Tahlilni Qayta Qilish", use_container_width=True):
             st.session_state.current_page = 'analysis'
             st.rerun()
     
-    with col2:
+    with search_nav_col2:
         if st.button("📄 Rasmiy Hisobot Ko'rish", use_container_width=True):
             st.session_state.current_page = 'report'
             st.rerun()
